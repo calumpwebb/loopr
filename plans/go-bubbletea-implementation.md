@@ -657,7 +657,7 @@ func LooprDirExists() bool {
 ```bash
 mkdir loopr
 cd loopr
-go mod init github.com/yourusername/loopr
+go mod init github.com/calumpwebb/loopr
 go get github.com/charmbracelet/bubbletea
 go get github.com/charmbracelet/lipgloss
 go get github.com/charmbracelet/huh

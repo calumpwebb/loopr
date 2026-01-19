@@ -15,38 +15,20 @@ Loopr is a single-binary CLI tool that orchestrates autonomous development workf
 
 ## Installation
 
-### Download Binary
-
-Download the latest release for your platform:
-
-```bash
-# macOS (Apple Silicon)
-curl -L https://github.com/yourusername/loopr/releases/latest/download/loopr-darwin-arm64 -o loopr
-chmod +x loopr
-sudo mv loopr /usr/local/bin/
-
-# macOS (Intel)
-curl -L https://github.com/yourusername/loopr/releases/latest/download/loopr-darwin-amd64 -o loopr
-chmod +x loopr
-sudo mv loopr /usr/local/bin/
-
-# Linux
-curl -L https://github.com/yourusername/loopr/releases/latest/download/loopr-linux-amd64 -o loopr
-chmod +x loopr
-sudo mv loopr /usr/local/bin/
-
-# Windows
-# Download loopr-windows-amd64.exe from releases
-```
-
-### Build from Source
+### Install with Go
 
 Requires Go 1.22 or later:
 
 ```bash
-git clone https://github.com/yourusername/loopr.git
+go install github.com/calumpwebb/loopr@latest
+```
+
+### Build from Source
+
+```bash
+git clone https://github.com/calumpwebb/loopr.git
 cd loopr
-go build -o loopr main.go
+go build
 ```
 
 ## Quick Start
