@@ -11,18 +11,18 @@ import (
 func main() {
 	app := &cli.App{
 		Name:  "loopr",
-		Usage: "A tool for creating reproducible LLM workflows",
+		Usage: "Autonomous development orchestration with Claude and Ralph Loop",
 		Commands: []*cli.Command{
 			{
 				Name:  "init",
-				Usage: "Initialize a new loopr workflow",
+				Usage: "Initialize loopr in current directory",
 				Action: func(c *cli.Context) error {
 					return cmd.Init()
 				},
 			},
 			{
 				Name:  "plan",
-				Usage: "Create or update workflow plan",
+				Usage: "Generate implementation plan",
 				Action: func(c *cli.Context) error {
 					cmd.Plan()
 					return nil
@@ -30,7 +30,7 @@ func main() {
 			},
 			{
 				Name:  "build",
-				Usage: "Execute workflow based on plan",
+				Usage: "Build from plan",
 				Action: func(c *cli.Context) error {
 					cmd.Build()
 					return nil

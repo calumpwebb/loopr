@@ -1,8 +1,8 @@
 # Loopr
 
-**Ralph Loop orchestration for Claude Code**
+**Autonomous development orchestration with Claude and Ralph Loop**
 
-Loopr is a single-binary CLI tool that provides a polished, interactive experience for running Ralph Playbook loops with Claude. Built with Go and Bubble Tea, it offers beautiful prompts and live dashboards for planning and building projects.
+Loopr is a single-binary CLI tool that orchestrates autonomous development workflows. It runs Claude in iterative loops to plan and build projects, automatically committing each iteration to git. Built with Go and Bubble Tea, it provides a polished interactive experience for the Ralph Loop methodology.
 
 ## Features
 
