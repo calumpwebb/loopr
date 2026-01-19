@@ -1,5 +1,7 @@
 # Ralph Docker Sandbox Setup
 
+> **Note:** As of v0.2.0, loopr automatically handles Docker sandbox setup. This guide is for manual/advanced setup only. For normal usage, just use `loopr init`, `loopr plan`, and `loopr build`.
+
 ## Quick Start
 
 1. **Set your Anthropic API key**:
