@@ -15,11 +15,13 @@ echo "Loopr Release Tool"
 echo "=================="
 echo ""
 
-# Check for uncommitted changes
-if ! git diff-index --quiet HEAD --; then
-    echo -e "${RED}✗${NC} Uncommitted changes detected"
+# Check if working tree is clean
+if [[ -n $(git status --porcelain) ]]; then
+    echo -e "${RED}✗${NC} Working tree is not clean"
     echo ""
-    echo "Please commit or stash your changes first:"
+    git status --short
+    echo ""
+    echo "Please commit or stash all changes first:"
     echo "  git add ."
     echo "  git commit -m 'your message'"
     echo ""

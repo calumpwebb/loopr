@@ -10,6 +10,10 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+const (
+	githubURL = "https://github.com/calumpwebb/loopr"
+)
+
 // version and commit are set via ldflags during release builds
 var (
 	version = "dev" // Set via ldflags: -X main.version=v0.1.0
@@ -58,6 +62,7 @@ func main() {
 				Usage: "Show version information",
 				Action: func(c *cli.Context) error {
 					fmt.Printf("loopr version %s\n", currentVersion)
+					fmt.Printf("GitHub: %s\n", githubURL)
 					return nil
 				},
 			},
