@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
+	"github.com/calumpwebb/loopr/cmd"
 	"github.com/urfave/cli/v2"
 )
 
@@ -17,15 +17,14 @@ func main() {
 				Name:  "init",
 				Usage: "Initialize a new loopr workflow",
 				Action: func(c *cli.Context) error {
-					fmt.Println("Initializing loopr workflow...")
-					return nil
+					return cmd.Init()
 				},
 			},
 			{
 				Name:  "plan",
 				Usage: "Create or update workflow plan",
 				Action: func(c *cli.Context) error {
-					fmt.Println("Creating workflow plan...")
+					cmd.Plan()
 					return nil
 				},
 			},
@@ -33,7 +32,7 @@ func main() {
 				Name:  "build",
 				Usage: "Execute workflow based on plan",
 				Action: func(c *cli.Context) error {
-					fmt.Println("Building workflow...")
+					cmd.Build()
 					return nil
 				},
 			},
