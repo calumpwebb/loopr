@@ -61,6 +61,101 @@ The release script will:
 3. Create an annotated git tag
 4. Push to GitHub (triggers automated build/release via GitHub Actions)
 
+## Testing Loopr with tmux
+
+**IMPORTANT**: Because loopr is highly interactive (prompts, theme selection, authentication), you MUST use tmux when testing programmatically. Direct bash execution will fail on interactive prompts.
+
+### Why tmux?
+- Loopr has interactive prompts (iterations, authentication, Claude theme setup)
+- tmux allows you to send keystrokes and capture output from interactive sessions
+- You can monitor the session in real-time while Claude runs
+
+### Basic tmux Testing Pattern
+
+```bash
+# 1. Create a new tmux session in your test directory
+tmux new-session -d -s loopr-test -c /path/to/test-project
+
+# 2. Send the loopr command
+tmux send-keys -t loopr-test "/path/to/loopr plan" Enter
+
+# 3. Wait briefly and capture output (use short sleeps: 0.5-1s is usually enough)
+sleep 0.5 && tmux capture-pane -t loopr-test -p
+
+# 4. Interact with prompts
+# For Yes/No prompts: send "y" or "n"
+tmux send-keys -t loopr-test "y"
+
+# For text input: send text then Enter
+tmux send-keys -t loopr-test "5" Enter
+
+# 5. Monitor progress with scrollback
+tmux capture-pane -t loopr-test -p -S -100  # Last 100 lines
+
+# 6. Clean up when done
+tmux kill-session -t loopr-test
+```
+
+### Testing Authentication Flow
+
+```bash
+# Start loopr
+tmux send-keys -t loopr-test "./loopr plan" Enter
+
+# Wait for auth prompt (0.5s is enough for most prompts)
+sleep 0.5 && tmux capture-pane -t loopr-test -p
+
+# Respond to "Authenticate now?" → Yes
+tmux send-keys -t loopr-test "y"
+
+# Wait for Claude theme selection
+sleep 1 && tmux capture-pane -t loopr-test -p
+
+# Select default theme
+tmux send-keys -t loopr-test Enter
+
+# Wait for iterations prompt
+sleep 0.5 && tmux capture-pane -t loopr-test -p
+
+# Enter number of iterations
+tmux send-keys -t loopr-test "3" Enter
+
+# Monitor the loop
+watch -n 2 'tmux capture-pane -t loopr-test -p -S -50'
+```
+
+### Sleep Duration Guidelines
+
+- **Initial command**: 0.5s (prompts appear quickly)
+- **After keystroke**: 0.5s (UI updates fast)
+- **Theme selection**: 1s (Claude initialization takes a moment)
+- **During loop**: Check every 5-10s (iterations can take minutes)
+- **Never use 2s+ for simple prompts** - it's unnecessarily slow
+
+### Monitoring Long-Running Loops
+
+```bash
+# Attach to session to watch live
+tmux attach -t loopr-test
+
+# Or poll periodically (detached)
+while true; do
+  clear
+  tmux capture-pane -t loopr-test -p -S -30
+  sleep 5
+done
+
+# Check git commits being created
+watch -n 5 'cd /path/to/test-project && git log --oneline -5'
+```
+
+### Common Issues
+
+1. **"Authentication required"** - Remove existing sandbox: `docker sandbox ls` then `docker sandbox rm <id>`
+2. **Prompt not responding** - Check if you're sending the right key (`y` vs `Enter`)
+3. **Output truncated** - Use `-S -N` flag with larger N value for more scrollback
+4. **Session frozen** - Attach and press Ctrl+C to gracefully stop
+
 ## Architecture
 
 ### Directory Structure
