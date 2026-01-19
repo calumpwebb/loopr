@@ -9,11 +9,11 @@ import (
 
 // Config represents the loopr configuration
 type Config struct {
-	Schema  string       `json:"$schema"`
-	Sandbox string       `json:"sandbox"`
-	LooprDir string      `json:"looprDir,omitempty"`
-	Model   *ModelConfig `json:"model,omitempty"`
-	Git     *GitConfig   `json:"git,omitempty"`
+	Schema     string            `json:"$schema"`
+	Sandbox    string            `json:"sandbox"`
+	LooprDir   string            `json:"looprDir,omitempty"`
+	Model      *ModelConfig      `json:"model,omitempty"`
+	Git        *GitConfig        `json:"git,omitempty"`
 	Iterations *IterationsConfig `json:"iterations,omitempty"`
 }
 
