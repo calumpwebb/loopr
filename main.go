@@ -10,43 +10,39 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-// version is set via ldflags during release builds
-var version = "dev"
+// version and commit are set via ldflags during release builds
+var (
+	version = "dev" // Set via ldflags: -X main.version=v0.1.0
+	commit  = ""    // Set via ldflags: -X main.commit=abc1234
+)
 
 func getVersion() string {
-	// If version is set via ldflags (release builds), use it
-	if version != "dev" {
-		return version
+	// For release builds, both version and commit are set via ldflags
+	if version != "dev" && commit != "" {
+		return fmt.Sprintf("%s (%s)", version, commit)
 	}
 
-	// Otherwise, try to get version from build info (development builds)
-	info, ok := debug.ReadBuildInfo()
-	if !ok {
-		return "unknown"
-	}
+	// For dev builds, try to get commit from build info
+	if version == "dev" {
+		info, ok := debug.ReadBuildInfo()
+		if !ok {
+			return "unknown"
+		}
 
-	// Get version from module info
-	moduleVersion := info.Main.Version
-	if moduleVersion == "(devel)" || moduleVersion == "" {
-		moduleVersion = "dev"
-	}
-
-	// Try to get git commit from build settings
-	var commit string
-	for _, setting := range info.Settings {
-		if setting.Key == "vcs.revision" {
-			commit = setting.Value
-			if len(commit) > 7 {
-				commit = commit[:7]
+		// Try to get git commit from build settings
+		for _, setting := range info.Settings {
+			if setting.Key == "vcs.revision" {
+				c := setting.Value
+				if len(c) > 7 {
+					c = c[:7]
+				}
+				return fmt.Sprintf("%s (%s)", version, c)
 			}
-			break
 		}
 	}
 
-	if commit != "" {
-		return fmt.Sprintf("%s (%s)", moduleVersion, commit)
-	}
-	return moduleVersion
+	// Fallback: just return version
+	return version
 }
 
 func main() {

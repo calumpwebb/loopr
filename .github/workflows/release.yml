@@ -40,12 +40,18 @@ jobs:
         id: get_version
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
+      - name: Get commit SHA (short)
+        id: get_commit
+        run: echo "COMMIT=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
       - name: Build binary
         env:
           GOOS: ${{ matrix.os }}
           GOARCH: ${{ matrix.arch }}
         run: |
-          go build -ldflags "-X main.version=${{ steps.get_version.outputs.VERSION }}" -o loopr-${{ matrix.os }}-${{ matrix.arch }}
+          go build \
+            -ldflags "-X main.version=${{ steps.get_version.outputs.VERSION }} -X main.commit=${{ steps.get_commit.outputs.COMMIT }}" \
+            -o loopr-${{ matrix.os }}-${{ matrix.arch }}
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
