@@ -1,0 +1,41 @@
+# Claude Instructions
+
+## Project Overview
+
+[Brief description of what this project does]
+
+## Tech Stack
+
+[List your tech stack]
+
+## Development Guidelines
+
+[Project-specific development guidelines]
+
+## Architecture
+
+[High-level architecture notes]
+
+## Loopr Integration
+
+This project uses Loopr for Ralph Loop orchestration. Key files:
+
+- `.loopr/PROMPT_plan.md` - Planning phase prompt
+- `.loopr/PROMPT_build.md` - Build phase prompt
+- `.loopr/AGENTS.md` - Operational notes for agents
+- `.loopr/specs/*` - Specifications for features
+- `@IMPLEMENTATION_PLAN.md` - Current implementation plan
+
+### Running Loops
+
+```bash
+# Generate implementation plan
+loopr plan
+
+# Build from plan
+loopr build
+```
+
+## Conventions
+
+[Project-specific conventions and patterns]

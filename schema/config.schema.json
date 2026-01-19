@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/loopr/schema/config.schema.json",
+  "title": "Loopr Configuration",
+  "description": "Configuration schema for Loopr Ralph Loop orchestration",
+  "type": "object",
+  "required": ["sandbox", "looprDir"],
+  "properties": {
+    "sandbox": {
+      "type": "string",
+      "description": "Sandbox environment to use for Claude execution",
+      "enum": ["docker"],
+      "default": "docker"
+    },
+    "looprDir": {
+      "type": "string",
+      "description": "Directory where loopr files are stored",
+      "default": ".loopr",
+      "pattern": "^[\\w.-]+$"
+    },
+    "model": {
+      "type": "object",
+      "description": "Model configuration for different phases",
+      "properties": {
+        "plan": {
+          "type": "string",
+          "description": "Model to use for planning phase",
+          "default": "claude-sonnet-4",
+          "pattern": "^claude-(opus|sonnet|haiku)-[0-9]+(\\.[0-9]+)?$"
+        },
+        "build": {
+          "type": "string",
+          "description": "Model to use for build phase",
+          "default": "claude-sonnet-4",
+          "pattern": "^claude-(opus|sonnet|haiku)-[0-9]+(\\.[0-9]+)?$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "git": {
+      "type": "object",
+      "description": "Git configuration options",
+      "properties": {
+        "autoPush": {
+          "type": "boolean",
+          "description": "Automatically push to remote after each iteration",
+          "default": true
+        },
+        "autoCommit": {
+          "type": "boolean",
+          "description": "Automatically commit changes after each iteration",
+          "default": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "iterations": {
+      "type": "object",
+      "description": "Default iteration settings",
+      "properties": {
+        "plan": {
+          "type": "integer",
+          "description": "Default number of iterations for plan phase",
+          "minimum": 1,
+          "default": 5
+        },
+        "build": {
+          "type": "integer",
+          "description": "Default number of iterations for build phase",
+          "minimum": 1,
+          "default": 10
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
