@@ -18,28 +18,41 @@ func (d *DockerSandbox) IsAvailable() bool {
 }
 
 func (d *DockerSandbox) IsAuthenticated() bool {
-	// Quick haiku test
+	// Check if Claude Code is fully set up by running a quick command
+	// This detects both API auth AND first-time setup completion
+	cwd, err := os.Getwd()
+	if err != nil {
+		return false
+	}
+
 	cmd := exec.Command(
 		"docker", "sandbox", "run",
-		"claude", "-p",
-		"--model=claude-haiku-4",
-		"--system-prompt=You must reply with only 'OK'. Nothing else.",
+		"-w", cwd,
+		"claude",
+		"--model=haiku",
+		"--dangerously-skip-permissions",
 		"Say OK",
 	)
 
 	// Suppress output, just check exit code
 	cmd.Stdout = nil
 	cmd.Stderr = nil
+	cmd.Stdin = nil
 
-	err := cmd.Run()
+	err = cmd.Run()
 	return err == nil
 }
 
 func (d *DockerSandbox) Authenticate() error {
-	// Run interactive auth
+	// Run interactive auth with full Claude Code setup
+	// This triggers first-time setup (theme selection, etc.) during auth phase
 	cmd := exec.Command(
 		"docker", "sandbox", "run",
-		"claude", "--version",
+		"claude",
+		"-p",
+		"--model=haiku",
+		"--system-prompt=Reply with ONLY: 'Authentication successful!'",
+		"Authenticate",
 	)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
