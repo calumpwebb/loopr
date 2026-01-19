@@ -10,16 +10,25 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+// version is set via ldflags during release builds
+var version = "dev"
+
 func getVersion() string {
+	// If version is set via ldflags (release builds), use it
+	if version != "dev" {
+		return version
+	}
+
+	// Otherwise, try to get version from build info (development builds)
 	info, ok := debug.ReadBuildInfo()
 	if !ok {
 		return "unknown"
 	}
 
 	// Get version from module info
-	version := info.Main.Version
-	if version == "(devel)" || version == "" {
-		version = "dev"
+	moduleVersion := info.Main.Version
+	if moduleVersion == "(devel)" || moduleVersion == "" {
+		moduleVersion = "dev"
 	}
 
 	// Try to get git commit from build settings
@@ -35,24 +44,24 @@ func getVersion() string {
 	}
 
 	if commit != "" {
-		return fmt.Sprintf("%s (%s)", version, commit)
+		return fmt.Sprintf("%s (%s)", moduleVersion, commit)
 	}
-	return version
+	return moduleVersion
 }
 
 func main() {
-	version := getVersion()
+	currentVersion := getVersion()
 
 	app := &cli.App{
 		Name:    "loopr",
 		Usage:   "Autonomous development orchestration with Claude and Ralph Loop",
-		Version: version,
+		Version: currentVersion,
 		Commands: []*cli.Command{
 			{
 				Name:  "version",
 				Usage: "Show version information",
 				Action: func(c *cli.Context) error {
-					fmt.Printf("loopr version %s\n", version)
+					fmt.Printf("loopr version %s\n", currentVersion)
 					return nil
 				},
 			},
@@ -77,6 +86,13 @@ func main() {
 				Action: func(c *cli.Context) error {
 					cmd.Build()
 					return nil
+				},
+			},
+			{
+				Name:  "update",
+				Usage: "Update loopr to the latest version",
+				Action: func(c *cli.Context) error {
+					return cmd.Update(currentVersion)
 				},
 			},
 		},

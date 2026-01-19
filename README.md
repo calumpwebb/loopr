@@ -15,21 +15,58 @@ Loopr is a single-binary CLI tool that orchestrates autonomous development workf
 
 ## Installation
 
-### Install with Go
-
-Requires Go 1.22 or later:
+### Quick Install (Recommended)
 
 ```bash
-go install github.com/calumpwebb/loopr@latest
+curl -fsSL https://raw.githubusercontent.com/calumpwebb/loopr/main/install.sh | bash
+```
+
+This will:
+- Download the latest release for your platform
+- Install to `~/bin` (customizable with `INSTALL_DIR`)
+- Suggest PATH updates if needed
+
+### Custom Install Location
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/calumpwebb/loopr/main/install.sh | INSTALL_DIR=/usr/local/bin bash
+```
+
+### Manual Installation
+
+1. Download the latest release for your platform from [GitHub Releases](https://github.com/calumpwebb/loopr/releases)
+2. Extract and move to a directory in your PATH:
+   ```bash
+   mv loopr-darwin-arm64 /usr/local/bin/loopr
+   chmod +x /usr/local/bin/loopr
+   ```
+
+### Update
+
+```bash
+loopr update
 ```
 
 ### Build from Source
+
+Requires Go 1.24+:
 
 ```bash
 git clone https://github.com/calumpwebb/loopr.git
 cd loopr
 go build
 ```
+
+### Supported Platforms
+
+Currently supported:
+- macOS Apple Silicon (ARM64)
+
+Coming soon:
+- macOS Intel (AMD64)
+- Linux ARM64
+- Linux AMD64
+- Windows
 
 ### Check Version
 
@@ -137,6 +174,16 @@ Output:
 - Streams Claude responses in real-time
 - Makes incremental code changes
 - Pushes to git after each iteration
+
+### `loopr update`
+
+Update loopr to the latest version.
+
+```bash
+loopr update
+```
+
+Checks GitHub releases for updates and installs if available. The update is atomic - if it fails, your current installation remains intact.
 
 ## Configuration
 

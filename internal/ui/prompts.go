@@ -81,3 +81,19 @@ func PromptIterations() int {
 	iterations, _ := strconv.Atoi(iterationsStr)
 	return iterations
 }
+
+// PromptUpdate prompts the user to confirm updating loopr
+func PromptUpdate() bool {
+	var update bool
+
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewConfirm().
+				Title("Update now?").
+				Value(&update),
+		),
+	)
+
+	form.Run()
+	return update
+}
