@@ -56,10 +56,9 @@ func (d *DockerSandbox) ExecuteClaude(prompt string, model string) error {
 	cmd := exec.Command(
 		"docker", "sandbox", "run",
 		"-w", cwd,
-		"claude", "-p",
+		"claude",
 		"--dangerously-skip-permissions",
 		"--model="+model,
-		"--output-format=stream-json",
 		prompt,
 	)
 

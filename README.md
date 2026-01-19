@@ -31,6 +31,14 @@ cd loopr
 go build
 ```
 
+### Check Version
+
+```bash
+loopr version
+# or
+loopr --version
+```
+
 ## Quick Start
 
 ### 1. Initialize
