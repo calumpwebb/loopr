@@ -70,9 +70,36 @@ The release script will:
 - tmux allows you to send keystrokes and capture output from interactive sessions
 - You can monitor the session in real-time while Claude runs
 
+### Preparing for Tests
+
+**CRITICAL**: Always clear Docker sandboxes before testing authentication flows or new states:
+
+```bash
+# List all sandboxes
+docker sandbox ls
+
+# Remove all sandboxes (clean slate)
+docker sandbox ls | awk 'NR>1 {print $1}' | xargs -I {} docker sandbox rm {}
+
+# Or remove specific sandbox
+docker sandbox rm <sandbox-id>
+
+# Kill existing tmux session
+tmux kill-session -t loopr-test 2>/dev/null
+```
+
+**When to clear sandboxes:**
+- Testing authentication flow
+- Testing first-time setup/onboarding
+- Testing new features that depend on fresh state
+- After making changes to sandbox interaction code
+- When getting unexpected authentication errors
+
 ### Basic tmux Testing Pattern
 
 ```bash
+# 0. ALWAYS clear sandboxes first (see above)
+
 # 1. Create a new tmux session in your test directory
 tmux new-session -d -s loopr-test -c /path/to/test-project
 
