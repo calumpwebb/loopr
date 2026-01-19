@@ -345,6 +345,33 @@ make build-all
 GOOS=darwin GOARCH=arm64 go build -o loopr-darwin-arm64
 ```
 
+### Creating a Release
+
+To create a new release, use the release script:
+
+```bash
+./scripts/release.sh
+```
+
+The script will:
+1. Check for uncommitted changes (fails if any exist)
+2. Show the current version
+3. Prompt for the new version (validates format)
+4. Create an annotated git tag
+5. Push the tag to GitHub
+
+Once pushed, GitHub Actions will automatically:
+- Build the binary for supported platforms
+- Create a GitHub release
+- Upload the binaries as release assets
+
+**Version format:**
+- Release: `v0.1.0`, `v1.2.3`
+- Pre-release: `v0.1.0-beta.1`, `v1.0.0-rc.2`
+
+**Permissions:**
+Only repository owners/admins can create releases. Collaborators need explicit write access.
+
 ## License
 
 MIT
