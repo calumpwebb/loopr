@@ -192,17 +192,30 @@ loopr/
 ├── main.go                 # CLI entry point, version handling, command routing
 ├── cmd/                    # Command implementations
 │   ├── init.go            # Initialize .loopr/ directory with templates
-│   ├── plan.go            # Run planning loop (also contains Build())
+│   ├── plan.go            # Run planning/build loops (shared runLoop function)
+│   ├── import.go          # Import tasks from PRD/spec files
+│   ├── archive.go         # Archive completed tasks
+│   ├── status.go          # Show task status
 │   └── update.go          # Self-update functionality
 ├── internal/
-│   ├── config/            # Configuration loading from .loopr/config.json
+│   ├── prompts/           # Embedded prompts (plan, build, import)
 │   ├── sandbox/           # Docker sandbox abstraction and Claude execution
 │   ├── git/               # Git operations (push, branch detection)
 │   ├── loop/              # Loop controller (iteration management)
 │   └── ui/                # Bubble Tea/Huh prompts and styling
-├── templates/             # Embedded templates (PROMPT_*.md, AGENTS.md, etc.)
-│   └── embed.go          # Go embed directives for templates
-└── schema/               # JSON schemas for config validation
+└── templates/             # User-facing templates (tasks.md, context.md, CLAUDE.md)
+    └── embed.go           # Go embed directives for templates
+```
+
+### User-Facing File Structure (Created by loopr init)
+
+```
+.loopr/
+├── tasks.md              # Current task list (checkboxes with priorities)
+├── context.md           # Project context and conventions
+├── completed/           # Archive directory for completed tasks
+│   └── YYYY-MM-DD.md   # Tasks archived on specific dates
+└── prd/                 # Optional: PRD files to import from
 ```
 
 ### Key Architectural Patterns
@@ -211,32 +224,42 @@ loopr/
 - `main.go` defines CLI commands using urfave/cli
 - Commands delegate to functions in `cmd/` package
 - `cmd/plan.go` contains both `Plan()` and `Build()` which call shared `runLoop()` function
-- `runLoop()` validates environment, loads config, creates sandbox, then delegates to loop controller
+- `runLoop()` validates environment, creates sandbox, then delegates to loop controller
+- **No config.json needed** - hardcoded to use Docker sandbox and sonnet model
 
 #### 2. Loop Controller Pattern
 - `internal/loop/controller.go` orchestrates iterations
-- Loads prompt file based on mode (plan/build)
+- Uses embedded prompts from `internal/prompts` package (not file-based)
 - Executes Claude via sandbox for each iteration
 - Automatically pushes to git after each iteration
 - Handles graceful shutdown on Ctrl+C
 
-#### 3. Sandbox Abstraction
+#### 3. Embedded Prompts (NEW Architecture)
+- Prompts are embedded in Go binary, not user-editable files
+- `internal/prompts/plan.go` - Plan prompt (analyzes code, refines tasks)
+- `internal/prompts/build.go` - Build prompt (implements tasks)
+- `internal/prompts/import.go` - Import prompt (extracts tasks from PRDs)
+- **Benefits**: Consistent behavior, no accidental prompt modification, easier updates
+
+#### 4. Task Management
+- Tasks stored in `.loopr/tasks.md` as checkboxes with priorities
+- Format: `- [ ] Task description (priority: high|medium|low)`
+- Plan phase: refines tasks, adds/removes/reprioritizes (does NOT implement)
+- Build phase: picks highest-priority task, implements, checks it off
+- Archive command: moves completed tasks to `.loopr/completed/YYYY-MM-DD.md`
+
+#### 5. Sandbox Abstraction
 - `internal/sandbox/sandbox.go` defines interface
 - `internal/sandbox/docker.go` implements Docker-specific logic
 - Uses `docker sandbox run` command with working directory mount
 - Authentication check via quick haiku test
 - Streams stdout/stderr directly to terminal for live output
 
-#### 4. Template System
+#### 6. Template System
 - Templates embedded at compile time via `//go:embed`
 - `templates/embed.go` provides extraction to `.loopr/` directory
-- Templates include: PROMPT_plan.md, PROMPT_build.md, AGENTS.md, config.json, specs/
-
-#### 5. Configuration
-- JSON-based configuration in `.loopr/config.json`
-- Schema validation (references `schema/config.schema.json`)
-- Supports custom models per phase (plan/build)
-- Currently only "docker" sandbox is supported
+- Templates include: tasks.md.template, context.md.template, CLAUDE.md.template
+- Init command renames .template files to actual files
 
 ## Important Implementation Details
 

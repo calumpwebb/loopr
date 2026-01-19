@@ -1,9 +1,0 @@
-{
-  "$schema": "../schema/config.schema.json",
-  "sandbox": "docker",
-  "looprDir": ".loopr",
-  "model": {
-    "plan": "sonnet",
-    "build": "sonnet"
-  }
-}

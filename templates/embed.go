@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-//go:embed *.md *.json *.template specs/*
+//go:embed *.template
 var FS embed.FS
 
 // ExtractTo writes all embedded template files to the specified destination directory

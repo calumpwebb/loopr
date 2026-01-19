@@ -90,6 +90,39 @@ func main() {
 				},
 			},
 			{
+				Name:      "import",
+				Usage:     "Import tasks from a PRD/spec file",
+				ArgsUsage: "<file>",
+				Action: func(c *cli.Context) error {
+					if c.NArg() == 0 {
+						fmt.Println("Usage: loopr import <file>")
+						fmt.Println("\nExample:")
+						fmt.Println("  loopr import docs/feature-spec.md")
+						fmt.Println("  loopr import .loopr/prd/new-feature.md")
+						os.Exit(1)
+					}
+					sourceFile := c.Args().First()
+					cmd.Import(sourceFile)
+					return nil
+				},
+			},
+			{
+				Name:  "archive",
+				Usage: "Archive completed tasks from tasks.md",
+				Action: func(c *cli.Context) error {
+					cmd.Archive()
+					return nil
+				},
+			},
+			{
+				Name:  "status",
+				Usage: "Show current task status",
+				Action: func(c *cli.Context) error {
+					cmd.Status()
+					return nil
+				},
+			},
+			{
 				Name:  "update",
 				Usage: "Update loopr to the latest version",
 				Action: func(c *cli.Context) error {

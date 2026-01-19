@@ -1,0 +1,13 @@
+# Tasks
+
+<!-- This file tracks your project tasks. -->
+<!-- Format: - [ ] Task description (priority: high|medium|low) -->
+<!-- Use 'loopr plan' to analyze and refine tasks -->
+<!-- Use 'loopr build' to implement tasks (checks them off automatically) -->
+<!-- Use 'loopr archive' to move completed tasks to .loopr/completed/ -->
+
+<!-- Example tasks (delete these and add your own): -->
+- [ ] Setup project structure (priority: high)
+- [ ] Implement core functionality (priority: high)
+- [ ] Add tests (priority: medium)
+- [ ] Write documentation (priority: low)

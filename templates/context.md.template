@@ -1,0 +1,55 @@
+# Project Context
+
+<!-- This file provides context to Claude about your project. -->
+<!-- All sections are optional - include what's relevant to your project. -->
+
+## Testing
+
+<!-- How to run tests (if applicable) -->
+<!-- Example: npm test -->
+<!-- Example: go test ./... -->
+<!-- Example: pytest -->
+
+## Build
+
+<!-- How to build the project (if applicable) -->
+<!-- Example: npm run build -->
+<!-- Example: go build -->
+<!-- Example: make build -->
+
+## Validation
+
+<!-- Additional validation commands (if applicable) -->
+<!-- Example: npm run lint && npm run typecheck -->
+<!-- Example: golangci-lint run -->
+
+## Architecture
+
+<!-- High-level architecture overview -->
+<!-- Example: Next.js 14 with App Router, Supabase for backend -->
+<!-- Example: Microservices architecture with Go + gRPC -->
+<!-- Example: Django REST API with React frontend -->
+
+## Tech Stack
+
+<!-- Key technologies and frameworks -->
+<!-- Example: -->
+<!-- - Frontend: React 18, TailwindCSS -->
+<!-- - Backend: Node.js, Express -->
+<!-- - Database: PostgreSQL -->
+
+## Conventions
+
+<!-- Coding conventions and patterns to follow -->
+<!-- Example: -->
+<!-- - Use server actions for mutations -->
+<!-- - Co-locate tests with source files -->
+<!-- - Prefer composition over inheritance -->
+
+## Important Notes
+
+<!-- Any other important information for Claude -->
+<!-- Example: -->
+<!-- - Auth tokens stored in httpOnly cookies -->
+<!-- - All API routes require authentication except /login -->
+<!-- - Use absolute imports (@ alias for src/) -->

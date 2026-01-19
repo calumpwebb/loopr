@@ -5,20 +5,13 @@ import (
 	"os"
 
 	"github.com/calumpwebb/loopr/internal/git"
-	"github.com/calumpwebb/loopr/internal/loop"
+	"github.com/calumpwebb/loopr/internal/prompts"
 	"github.com/calumpwebb/loopr/internal/sandbox"
 	"github.com/calumpwebb/loopr/internal/ui"
 )
 
-func Plan() {
-	runLoop("plan")
-}
-
-func Build() {
-	runLoop("build")
-}
-
-func runLoop(mode string) {
+// Import imports tasks from a PRD/spec file
+func Import(sourceFile string) {
 	// Check if git repo
 	if !git.IsGitRepo() {
 		fmt.Println(ui.ErrorStyle.Render("✗ Not a git repository"))
@@ -30,6 +23,19 @@ func runLoop(mode string) {
 	// Check if .loopr directory exists
 	if _, err := os.Stat(".loopr"); os.IsNotExist(err) {
 		fmt.Println(ui.ErrorStyle.Render("✗ .loopr directory not found"))
+		fmt.Println("\nRun 'loopr init' first to set up your project.")
+		os.Exit(1)
+	}
+
+	// Check if source file exists
+	if _, err := os.Stat(sourceFile); os.IsNotExist(err) {
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Source file not found: %s", sourceFile)))
+		os.Exit(1)
+	}
+
+	// Check if tasks.md exists
+	if _, err := os.Stat(".loopr/tasks.md"); os.IsNotExist(err) {
+		fmt.Println(ui.ErrorStyle.Render("✗ .loopr/tasks.md not found"))
 		fmt.Println("\nRun 'loopr init' first to set up your project.")
 		os.Exit(1)
 	}
@@ -68,13 +74,37 @@ func runLoop(mode string) {
 		}
 	}
 
-	// Prompt for iterations
-	maxIterations := ui.PromptIterations()
+	fmt.Println()
+	fmt.Printf("Importing tasks from: %s\n\n", sourceFile)
 
-	// Run loop
-	controller := loop.NewController(sb, mode, maxIterations)
-	if err := controller.Run(); err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("\n✗ Loop failed: %v", err)))
+	// Get import prompt with source file
+	prompt := prompts.GetImportPrompt(sourceFile)
+
+	// Execute Claude with sonnet model
+	if err := sb.ExecuteClaude(prompt, "sonnet"); err != nil {
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("\n✗ Import failed: %v", err)))
 		os.Exit(1)
 	}
+
+	// Push to git
+	branch, err := git.CurrentBranch()
+	if err != nil {
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("\n✗ Failed to get git branch: %v", err)))
+		os.Exit(1)
+	}
+
+	fmt.Println("\nPushing to git...")
+	if err := git.Push(branch); err != nil {
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to push: %v", err)))
+		os.Exit(1)
+	}
+	fmt.Println(ui.SuccessStyle.Render("✓ Pushed to origin/" + branch))
+
+	fmt.Println()
+	fmt.Println(ui.SuccessStyle.Render("✓ Tasks imported successfully!"))
+	fmt.Println()
+	fmt.Println("Next steps:")
+	fmt.Println("  - Review .loopr/tasks.md to see imported tasks")
+	fmt.Println("  - Run 'loopr plan' to refine the task list")
+	fmt.Println("  - Run 'loopr build' to start implementing")
 }

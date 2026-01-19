@@ -9,9 +9,11 @@ Loopr is a single-binary CLI tool that orchestrates autonomous development workf
 - **Single binary**: No dependencies, just download and run
 - **Interactive prompts**: Beautiful TUI with Bubble Tea
 - **Docker sandbox**: Secure, isolated Claude execution
-- **Simple commands**: Only 3 commands to learn
+- **Simple commands**: 6 intuitive commands to learn
+- **Task-driven workflow**: Checkbox-based task management
 - **Live streaming**: Real-time Claude output
 - **Cross-platform**: Works on macOS, Linux, and Windows
+- **Embedded prompts**: Consistent behavior, no accidental modifications
 
 ## Installation
 
@@ -87,14 +89,32 @@ loopr init
 ```
 
 This will:
-- Create `.loopr/` directory with configuration
-- Set up Docker sandbox
-- Install Ralph Playbook templates
-- Create example spec files
+- Create `.loopr/` directory with task files
+- Create `tasks.md` for tracking work
+- Create `context.md` for project info
+- Set up archive and PRD directories
 
-### 2. Generate Plan
+### 2. Add Tasks
 
-Create an implementation plan:
+Edit `.loopr/tasks.md` to add your tasks:
+
+```markdown
+# Tasks
+
+- [ ] Implement user authentication (priority: high)
+- [ ] Add password reset flow (priority: medium)
+- [ ] Create user profile page (priority: low)
+```
+
+Or import tasks from a PRD:
+
+```bash
+loopr import docs/feature-spec.md
+```
+
+### 3. Plan
+
+Analyze and refine your task list:
 
 ```bash
 loopr plan
@@ -103,12 +123,13 @@ loopr plan
 Loopr will:
 - Check Docker authentication (prompts if needed)
 - Ask for iteration count
-- Run Claude in a loop to generate `IMPLEMENTATION_PLAN.md`
-- Automatically push changes to git
+- Analyze your codebase
+- Refine and break down tasks in `tasks.md`
+- Automatically commit and push changes
 
-### 3. Build
+### 4. Build
 
-Execute the plan:
+Implement the tasks:
 
 ```bash
 loopr build
@@ -117,22 +138,49 @@ loopr build
 Loopr will:
 - Check Docker authentication
 - Ask for iteration count
-- Run Claude to implement the plan
+- Pick the highest-priority unchecked task
+- Implement it completely
+- Check off the task and commit
 - Push changes after each iteration
+
+### 5. Manage Tasks
+
+```bash
+# Check status
+loopr status
+
+# Archive completed tasks
+loopr archive
+```
 
 ## How It Works
 
-Loopr orchestrates Ralph Playbook loops using the Docker sandbox for Claude Code:
+Loopr orchestrates task-driven development using embedded prompts and the Docker sandbox for Claude Code:
 
-1. **Setup**: `loopr init` creates configuration and template files
-2. **Planning**: `loopr plan` runs Claude iteratively to create a detailed implementation plan
-3. **Building**: `loopr build` executes the plan, making incremental changes
+1. **Setup**: `loopr init` creates task management files
+2. **Planning**: `loopr plan` runs Claude iteratively to analyze and refine your task list
+3. **Building**: `loopr build` picks tasks and implements them one by one
+4. **Management**: `loopr status`, `loopr archive`, and `loopr import` help manage your workflow
+
+### Task-Driven Approach
+
+- Tasks are stored in `.loopr/tasks.md` as checkboxes with priorities
+- **Plan phase**: Analyzes codebase, refines tasks (no implementation)
+- **Build phase**: Implements highest-priority task, checks it off
+- All changes are committed and pushed automatically
+
+### Embedded Prompts
+
+- Prompts are baked into the loopr binary (not user-editable files)
+- Ensures consistent behavior across projects
+- No accidental prompt modifications
+- Updates come with new loopr versions
 
 Each iteration:
-- Loads the prompt file (`.loopr/PROMPT_plan.md` or `.loopr/PROMPT_build.md`)
+- Uses embedded prompt based on mode (plan/build)
 - Executes Claude with the prompt in Docker sandbox
 - Streams output to your terminal in real-time
-- Pushes changes to git automatically
+- Commits and pushes changes automatically
 
 ## Commands
 
@@ -140,40 +188,100 @@ Each iteration:
 
 Interactive setup wizard that creates:
 - `.loopr/` directory structure
-- `PROMPT_plan.md` - Planning prompt template
-- `PROMPT_build.md` - Build prompt template
-- `AGENTS.md` - Agent behavior instructions
-- `config.json` - Sandbox configuration
-- `specs/` - Example specification files
-- `CLAUDE.md` - Project-specific Claude instructions
+- `tasks.md` - Task list with checkbox format
+- `context.md` - Project context and conventions
+- `completed/` - Archive directory for completed tasks
+- `prd/` - Directory for PRD files (optional)
+- `CLAUDE.md` - Project-specific Claude instructions (at root)
 
 Options are selected via interactive prompts (no CLI flags needed).
 
 ### `loopr plan`
 
-Generates an implementation plan by running Claude in a loop.
+Analyzes codebase and refines the task list by running Claude in a loop.
 
 Interactive prompts:
 - Docker authentication check (authenticates if needed)
 - Number of iterations (how many times to loop)
 
-Output:
-- Streams Claude responses in real-time
-- Creates `IMPLEMENTATION_PLAN.md`
-- Pushes to git after each iteration
+What it does:
+- Reads `.loopr/tasks.md` and `.loopr/context.md`
+- Analyzes your codebase
+- Refines tasks (breaks down, adds, removes, reprioritizes)
+- Updates `.loopr/tasks.md`
+- Does NOT implement code (planning only)
+- Commits and pushes after each iteration
 
 ### `loopr build`
 
-Executes the implementation plan.
+Implements tasks from `.loopr/tasks.md` one at a time.
 
 Interactive prompts:
 - Docker authentication check (authenticates if needed)
 - Number of iterations (how many times to loop)
 
-Output:
-- Streams Claude responses in real-time
-- Makes incremental code changes
-- Pushes to git after each iteration
+What it does:
+- Picks highest-priority unchecked task
+- Implements the functionality completely
+- Runs tests if specified in context.md
+- Checks off the task in `.loopr/tasks.md`
+- Commits with message referencing the task
+- Pushes after each iteration
+- Moves to next task in next iteration
+
+### `loopr import <file>`
+
+Imports tasks from a PRD or spec file.
+
+```bash
+loopr import docs/feature-spec.md
+loopr import .loopr/prd/new-feature.md
+```
+
+What it does:
+- Reads the specified file
+- Extracts actionable tasks
+- Assigns priorities (high/medium/low)
+- Appends tasks to `.loopr/tasks.md`
+- Commits and pushes changes
+
+Use this to:
+- Convert PRDs into task lists
+- Add work from external documents
+- Continuously add new tasks mid-project
+
+### `loopr archive`
+
+Archives completed tasks from `tasks.md` to keep it clean.
+
+```bash
+loopr archive
+```
+
+What it does:
+- Finds all checked tasks `[x]` in `.loopr/tasks.md`
+- Moves them to `.loopr/completed/YYYY-MM-DD.md`
+- Updates `tasks.md` to remove completed tasks
+- Shows summary of archived tasks
+
+Run this when `tasks.md` gets cluttered with completed work.
+
+### `loopr status`
+
+Shows current task status and progress.
+
+```bash
+loopr status
+```
+
+What it shows:
+- Task counts (total, unchecked, completed)
+- Progress bar visualization
+- Last git commit message
+- Git working tree status
+- Suggested next steps
+
+Use this to quickly check project progress.
 
 ### `loopr update`
 
@@ -187,34 +295,55 @@ Checks GitHub releases for updates and installs if available. The update is atom
 
 ## Configuration
 
-### `.loopr/config.json`
+### `.loopr/tasks.md`
 
-```json
-{
-  "sandbox": "docker",
-  "looprDir": ".loopr",
-  "model": {
-    "plan": "sonnet",
-    "build": "sonnet"
-  }
-}
+Your task list in checkbox format:
+
+```markdown
+# Tasks
+
+- [ ] Implement user authentication (priority: high)
+- [ ] Add password reset flow (priority: medium)
+- [x] Setup database schema (priority: high)
+- [ ] Create user profile page (priority: low)
 ```
 
-Valid model values: `sonnet`, `opus`, `haiku`
+Format:
+- `- [ ]` = Unchecked task (not done)
+- `- [x]` = Checked task (completed)
+- `(priority: high|medium|low)` = Priority level
 
-Currently only Docker sandbox is supported.
+The plan phase refines this file, the build phase checks off tasks as it implements them.
 
-### `.loopr/PROMPT_plan.md`
+### `.loopr/context.md`
 
-Template prompt used during planning phase. Customize this to change how Claude generates plans.
+Project-specific information for Claude (all sections optional):
 
-### `.loopr/PROMPT_build.md`
+```markdown
+# Project Context
 
-Template prompt used during build phase. Customize this to change how Claude implements plans.
+## Testing
+npm test
 
-### `.loopr/AGENTS.md`
+## Build
+npm run build
 
-Agent behavior and identity instructions. Defines how Claude should act during loops.
+## Architecture
+Next.js 14 with App Router, Supabase for backend
+
+## Conventions
+- Use server actions for mutations
+- Co-locate tests with source files
+
+## Important Notes
+- Auth tokens stored in httpOnly cookies
+```
+
+Claude reads this file to understand your project. Update it as your project evolves.
+
+### Model Selection
+
+Loopr uses the **sonnet** model by default for both planning and building. This is hardcoded for simplicity and consistency in v1.
 
 ## Requirements
 
@@ -248,16 +377,18 @@ After running `loopr init`, your project will have:
 ```
 your-project/
 ├── .loopr/
-│   ├── config.json          # Sandbox configuration
-│   ├── PROMPT_plan.md       # Planning prompt template
-│   ├── PROMPT_build.md      # Build prompt template
-│   ├── AGENTS.md            # Agent behavior instructions
-│   └── specs/
-│       ├── README.md        # Spec documentation
-│       └── example-spec.md  # Example specification
-├── CLAUDE.md                # Project-specific Claude instructions
+│   ├── tasks.md            # Current task list
+│   ├── context.md          # Project context
+│   ├── completed/          # Archive directory
+│   └── prd/                # PRD files (optional)
+├── CLAUDE.md               # Project-specific Claude instructions
 └── [your project files]
 ```
+
+As you work:
+- `.loopr/tasks.md` gets updated (tasks added, checked off, reprioritized)
+- `.loopr/completed/` grows with archived tasks (YYYY-MM-DD.md files)
+- Your code changes are committed and pushed automatically
 
 ## Examples
 
@@ -268,18 +399,55 @@ your-project/
 cd my-project
 loopr init
 
-# Create specs describing what to build
-vim .loopr/specs/my-feature.md
+# Add tasks manually
+vim .loopr/tasks.md
+# - [ ] Implement user login (priority: high)
+# - [ ] Add logout button (priority: high)
+# - [ ] Create user profile page (priority: medium)
 
-# Generate implementation plan
+# Refine tasks
 loopr plan
-# (Select 3 iterations)
+# (Select 2-3 iterations)
 
-# Review IMPLEMENTATION_PLAN.md
+# Review refined .loopr/tasks.md
 
-# Build the feature
+# Build the features
 loopr build
-# (Select 5 iterations)
+# (Select 5-10 iterations)
+
+# Check progress
+loopr status
+
+# Archive completed work
+loopr archive
+```
+
+### Import from PRD
+
+```bash
+# Initialize
+loopr init
+
+# Create a PRD
+cat > .loopr/prd/authentication.md <<EOF
+# Authentication Feature
+
+## Requirements
+- Users can register with email/password
+- Users can log in
+- Users can reset password
+- Session management with JWT tokens
+EOF
+
+# Import tasks from PRD
+loopr import .loopr/prd/authentication.md
+
+# Review extracted tasks
+cat .loopr/tasks.md
+
+# Plan and build
+loopr plan
+loopr build
 ```
 
 ### Interrupting Loops

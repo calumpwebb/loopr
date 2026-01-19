@@ -59,14 +59,38 @@ func Init() error {
 		return fmt.Errorf("failed to extract templates: %w", err)
 	}
 
+	// Rename .template files to actual files
+	templateFiles := map[string]string{
+		"tasks.md.template":   "tasks.md",
+		"context.md.template": "context.md",
+	}
+
+	for templateName, actualName := range templateFiles {
+		templatePath := filepath.Join(looprDir, templateName)
+		actualPath := filepath.Join(looprDir, actualName)
+
+		if err := os.Rename(templatePath, actualPath); err != nil {
+			return fmt.Errorf("failed to rename %s to %s: %w", templateName, actualName, err)
+		}
+	}
+
+	// Create additional directories
+	completedDir := filepath.Join(looprDir, "completed")
+	if err := os.MkdirAll(completedDir, 0755); err != nil {
+		return fmt.Errorf("failed to create completed directory: %w", err)
+	}
+
+	prdDir := filepath.Join(looprDir, "prd")
+	if err := os.MkdirAll(prdDir, 0755); err != nil {
+		return fmt.Errorf("failed to create prd directory: %w", err)
+	}
+
 	// List created files with checkmarks
 	files := []string{
-		"PROMPT_build.md",
-		"PROMPT_plan.md",
-		"AGENTS.md",
-		"config.json",
-		"specs/README.md",
-		"specs/example-spec.md",
+		"tasks.md",
+		"context.md",
+		"completed/",
+		"prd/",
 	}
 
 	for _, file := range files {

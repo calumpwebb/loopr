@@ -4,24 +4,21 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"path/filepath"
 	"syscall"
 
-	"github.com/calumpwebb/loopr/internal/config"
 	"github.com/calumpwebb/loopr/internal/git"
+	"github.com/calumpwebb/loopr/internal/prompts"
 	"github.com/calumpwebb/loopr/internal/sandbox"
 )
 
 type Controller struct {
-	config  *config.Config
 	sandbox sandbox.Sandbox
 	mode    string // "plan" or "build"
 	maxIter int
 }
 
-func NewController(cfg *config.Config, sb sandbox.Sandbox, mode string, maxIter int) *Controller {
+func NewController(sb sandbox.Sandbox, mode string, maxIter int) *Controller {
 	return &Controller{
-		config:  cfg,
 		sandbox: sb,
 		mode:    mode,
 		maxIter: maxIter,
@@ -39,11 +36,15 @@ func (c *Controller) Run() error {
 		os.Exit(0)
 	}()
 
-	// Load prompt file
-	promptFile := c.getPromptFile() // .loopr/PROMPT_plan.md or PROMPT_build.md
-	prompt, err := os.ReadFile(promptFile)
-	if err != nil {
-		return err
+	// Get embedded prompt based on mode
+	var prompt string
+	switch c.mode {
+	case "plan":
+		prompt = prompts.PlanPrompt
+	case "build":
+		prompt = prompts.BuildPrompt
+	default:
+		return fmt.Errorf("unknown mode: %s", c.mode)
 	}
 
 	// Get git branch
@@ -56,9 +57,8 @@ func (c *Controller) Run() error {
 	for i := 1; i <= c.maxIter; i++ {
 		fmt.Printf("\n====== ITERATION %d/%d ======\n\n", i, c.maxIter)
 
-		// Execute Claude
-		model := c.getModel()
-		if err := c.sandbox.ExecuteClaude(string(prompt), model); err != nil {
+		// Execute Claude with sonnet model
+		if err := c.sandbox.ExecuteClaude(prompt, "sonnet"); err != nil {
 			return err
 		}
 
@@ -78,25 +78,4 @@ func (c *Controller) Run() error {
 	}
 
 	return nil
-}
-
-func (c *Controller) getPromptFile() string {
-	looprDir := ".loopr"
-	if c.config.LooprDir != "" {
-		looprDir = c.config.LooprDir
-	}
-	return filepath.Join(looprDir, fmt.Sprintf("PROMPT_%s.md", c.mode))
-}
-
-func (c *Controller) getModel() string {
-	// Use config model if specified, otherwise default to sonnet-4
-	if c.config.Model != nil {
-		if c.mode == "plan" && c.config.Model.Plan != "" {
-			return c.config.Model.Plan
-		}
-		if c.mode == "build" && c.config.Model.Build != "" {
-			return c.config.Model.Build
-		}
-	}
-	return "sonnet"
 }

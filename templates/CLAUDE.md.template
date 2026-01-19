@@ -18,23 +18,42 @@
 
 ## Loopr Integration
 
-This project uses Loopr for Ralph Loop orchestration. Key files:
+This project uses Loopr for autonomous development orchestration. Key files:
 
-- `.loopr/PROMPT_plan.md` - Planning phase prompt
-- `.loopr/PROMPT_build.md` - Build phase prompt
-- `.loopr/AGENTS.md` - Operational notes for agents
-- `.loopr/specs/*` - Specifications for features
-- `@IMPLEMENTATION_PLAN.md` - Current implementation plan
+- `.loopr/tasks.md` - Current task list (checkboxes with priorities)
+- `.loopr/context.md` - Project context and conventions
+- `.loopr/completed/` - Archive of completed tasks
+- `.loopr/prd/` - Optional: PRD files for importing tasks
 
-### Running Loops
+### Workflow
 
 ```bash
-# Generate implementation plan
+# Initialize loopr (one-time setup)
+loopr init
+
+# Analyze and refine tasks (planning phase)
 loopr plan
 
-# Build from plan
+# Implement tasks (build phase)
 loopr build
+
+# Import tasks from a PRD/spec file
+loopr import docs/feature-spec.md
+
+# Archive completed tasks
+loopr archive
+
+# Check current status
+loopr status
 ```
+
+### How It Works
+
+- **Planning**: `loopr plan` analyzes your codebase and refines the task list in `.loopr/tasks.md`
+- **Building**: `loopr build` picks the highest-priority unchecked task and implements it
+- **Task Format**: Tasks use checkbox format with priorities: `- [ ] Task description (priority: high|medium|low)`
+- **Prompts**: Loopr uses embedded prompts (in the binary), not user-editable files
+- **Context**: Put project-specific info in `.loopr/context.md` (architecture, conventions, test commands)
 
 ## Conventions
 
