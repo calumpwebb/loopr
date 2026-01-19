@@ -98,5 +98,5 @@ func (c *Controller) getModel() string {
 			return c.config.Model.Build
 		}
 	}
-	return "claude-sonnet-4"
+	return "sonnet"
 }

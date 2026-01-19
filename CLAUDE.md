@@ -128,7 +128,7 @@ loopr/
 - Claude authentication checked via quick haiku test before each command
 - Executes with `--dangerously-skip-permissions` flag (user is prompted during init)
 - Working directory mounted to allow Claude to modify local files
-- Model defaults to "claude-sonnet-4" unless overridden in config
+- Model defaults to "sonnet" unless overridden in config
 
 ### Git Operations
 - Automatic push after each iteration

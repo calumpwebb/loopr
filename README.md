@@ -192,9 +192,15 @@ Checks GitHub releases for updates and installs if available. The update is atom
 ```json
 {
   "sandbox": "docker",
-  "model": "claude-sonnet-4"
+  "looprDir": ".loopr",
+  "model": {
+    "plan": "sonnet",
+    "build": "sonnet"
+  }
 }
 ```
+
+Valid model values: `sonnet`, `opus`, `haiku`
 
 Currently only Docker sandbox is supported.
 
