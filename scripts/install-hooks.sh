@@ -23,8 +23,8 @@ fi
 
 echo "Running go fmt on staged files..."
 
-# Run go fmt on the entire project
-go fmt ./...
+# Run go fmt on the CLI project
+(cd projects/cli && go fmt ./...)
 
 # Add any formatted files back to staging
 for file in $STAGED_GO_FILES; do
@@ -43,7 +43,7 @@ chmod +x "$HOOKS_DIR/pre-commit"
 echo "✓ Pre-commit hook installed at $HOOKS_DIR/pre-commit"
 echo ""
 echo "The hook will:"
-echo "  - Run 'go fmt ./...' on staged Go files"
+echo "  - Run 'go fmt' in projects/cli on staged Go files"
 echo "  - Add formatted files back to staging"
 echo ""
 echo "To bypass the hook (not recommended), use: git commit --no-verify"

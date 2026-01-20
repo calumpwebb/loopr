@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Loopr is a CLI tool for autonomous development orchestration using Claude Code and the Ralph Loop methodology. It runs Claude in iterative loops to plan and build projects, with each iteration automatically committed to git. The tool is written in Go and uses Docker sandbox for secure Claude execution.
+Loopr is a CLI tool for agentic development loops using Claude Code and the Ralph Loop methodology. It runs Claude in iterative loops to plan and build projects, with each iteration automatically committed to git. The tool is written in Go and uses Docker sandbox for secure Claude execution.
+
+**Note**: This is a monorepo. The CLI code lives in `projects/cli/`. All development commands below assume you're in that directory.
 
 ## Tech Stack
 
@@ -20,11 +22,14 @@ Loopr is a CLI tool for autonomous development orchestration using Claude Code a
 
 ### Building
 ```bash
+cd projects/cli
 go build -o loopr main.go
 ```
 
 ### Testing
 ```bash
+cd projects/cli
+
 # Run all tests
 go test ./...
 
@@ -41,6 +46,7 @@ Current test coverage:
 
 ### Running Locally
 ```bash
+cd projects/cli
 go run main.go <command>
 # or after building
 ./loopr <command>
@@ -48,6 +54,8 @@ go run main.go <command>
 
 ### Cross-Compiling
 ```bash
+cd projects/cli
+
 # macOS ARM64
 GOOS=darwin GOARCH=arm64 go build -o loopr-darwin-arm64
 
