@@ -72,6 +72,35 @@ The release script will:
 3. Create an annotated git tag
 4. Push to GitHub (triggers automated build/release via GitHub Actions)
 
+### Build Provenance Attestations
+
+All release binaries are automatically attested during the GitHub Actions workflow:
+
+**What:** GitHub Artifact Attestations provide cryptographic proof of provenance using Sigstore
+**How:** The `actions/attest-build-provenance@v1` action runs after building all binaries
+**When:** Attestations are generated before release upload (automatic, no manual steps)
+**Compliance:** Meets SLSA Build Level 2 requirements
+
+**For maintainers:**
+- Attestations require no manual intervention
+- All 4 platform binaries are attested with a single wildcard pattern (`loopr-*`)
+- Permissions required: `id-token: write` and `attestations: write` (configured in workflow)
+- Verification: Download a release binary and run `gh attestation verify <file> -R calumpwebb/loopr`
+
+**User verification example:**
+```bash
+# Download a release binary
+gh release download v0.2.6 -p "loopr-darwin-arm64"
+
+# Verify attestation
+gh attestation verify loopr-darwin-arm64 -R calumpwebb/loopr
+```
+
+**Technical details:**
+- Signing method: Sigstore ephemeral certificates (keyless signing)
+- Attestation format: In-toto provenance (SLSA v1.0)
+- Transparency log: Recorded in Sigstore Rekor (immutable audit trail)
+
 ## Testing Loopr with tmux
 
 **IMPORTANT**: Because loopr is highly interactive (prompts, theme selection, authentication), you MUST use tmux when testing programmatically. Direct bash execution will fail on interactive prompts.
@@ -304,6 +333,20 @@ loopr/
 - All user interaction goes through `internal/ui/prompts.go`
 - Git operations isolated in `internal/git/operations.go`
 - Sandbox interface allows future non-Docker implementations
+
+### Plan Format
+**ALWAYS include a TLDR section at the top of any plan:**
+
+When creating implementation plans (in plan mode or otherwise), structure them with:
+
+```markdown
+# TLDR
+2-4 sentence summary of what this plan accomplishes and the approach taken.
+
+# [Rest of plan sections...]
+```
+
+This helps reviewers quickly understand the scope and strategy before diving into details.
 
 ### Commit Messages
 **ALWAYS use Conventional Commits format:**

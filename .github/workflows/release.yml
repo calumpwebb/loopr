@@ -55,6 +55,10 @@ jobs:
     name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -70,6 +74,11 @@ jobs:
         run: |
           mv artifacts/loopr-*/* .
           ls -la loopr-*
+
+      - name: Generate build provenance attestations
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: 'loopr-*'
 
       - name: Get version and previous tag
         id: version_info
