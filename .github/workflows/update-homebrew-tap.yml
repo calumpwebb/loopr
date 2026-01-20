@@ -1,0 +1,54 @@
+name: Update Homebrew Tap
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-tap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git config --global core.sshCommand "ssh -i ~/.ssh/deploy_key"
+
+      - name: Checkout homebrew-tap repo
+        run: |
+          git clone git@github.com:calumpwebb/homebrew-tap.git homebrew-tap
+
+      - name: Download and hash Intel binary
+        id: intel
+        run: |
+          curl -sL "https://github.com/calumpwebb/loopr/releases/download/${{ github.event.release.tag_name }}/loopr-darwin-amd64" -o loopr-intel
+          HASH=$(shasum -a 256 loopr-intel | awk '{print $1}')
+          echo "hash=$HASH" >> $GITHUB_OUTPUT
+
+      - name: Download and hash ARM binary
+        id: arm
+        run: |
+          curl -sL "https://github.com/calumpwebb/loopr/releases/download/${{ github.event.release.tag_name }}/loopr-darwin-arm64" -o loopr-arm
+          HASH=$(shasum -a 256 loopr-arm | awk '{print $1}')
+          echo "hash=$HASH" >> $GITHUB_OUTPUT
+
+      - name: Update formula
+        run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"  # Remove 'v' prefix
+
+          cd homebrew-tap
+          sed -i "s/version \".*\"/version \"$VERSION\"/" Formula/loopr.rb
+          sed -i "/on_intel do/,/end/ s/sha256 \".*\"/sha256 \"${{ steps.intel.outputs.hash }}\"/" Formula/loopr.rb
+          sed -i "/on_arm do/,/end/ s/sha256 \".*\"/sha256 \"${{ steps.arm.outputs.hash }}\"/" Formula/loopr.rb
+
+      - name: Commit and push
+        run: |
+          cd homebrew-tap
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/loopr.rb
+          git commit -m "Update loopr to ${{ github.event.release.tag_name }}"
+          git push
