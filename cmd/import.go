@@ -14,7 +14,7 @@ import (
 func Import(sourceFile string) {
 	// Check if git repo
 	if !git.IsGitRepo() {
-		fmt.Println(ui.ErrorStyle.Render("✗ Not a git repository"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: Not a git repository"))
 		fmt.Println("\nPlease initialize a git repository first:")
 		fmt.Println("  git init")
 		os.Exit(1)
@@ -22,20 +22,20 @@ func Import(sourceFile string) {
 
 	// Check if .loopr directory exists
 	if _, err := os.Stat(".loopr"); os.IsNotExist(err) {
-		fmt.Println(ui.ErrorStyle.Render("✗ .loopr directory not found"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: .loopr directory not found"))
 		fmt.Println("\nRun 'loopr init' first to set up your project.")
 		os.Exit(1)
 	}
 
 	// Check if source file exists
 	if _, err := os.Stat(sourceFile); os.IsNotExist(err) {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Source file not found: %s", sourceFile)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Source file not found: %s", sourceFile)))
 		os.Exit(1)
 	}
 
 	// Check if tasks.md exists
 	if _, err := os.Stat(".loopr/tasks.md"); os.IsNotExist(err) {
-		fmt.Println(ui.ErrorStyle.Render("✗ .loopr/tasks.md not found"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: .loopr/tasks.md not found"))
 		fmt.Println("\nRun 'loopr init' first to set up your project.")
 		os.Exit(1)
 	}
@@ -43,13 +43,13 @@ func Import(sourceFile string) {
 	// Create sandbox (hardcoded to docker for v1)
 	sb, err := sandbox.New("docker")
 	if err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to create sandbox: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Failed to create sandbox: %v", err)))
 		os.Exit(1)
 	}
 
 	// Check Docker available
 	if !sb.IsAvailable() {
-		fmt.Println(ui.ErrorStyle.Render("✗ Docker is not available"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: Docker is not available"))
 		fmt.Println("\nInstall Docker Desktop:")
 		fmt.Println("  https://www.docker.com/products/docker-desktop")
 		os.Exit(1)
@@ -57,14 +57,14 @@ func Import(sourceFile string) {
 
 	// Check auth (quick haiku test)
 	if !sb.IsAuthenticated() {
-		fmt.Println(ui.ErrorStyle.Render("✗ Docker sandbox not authenticated"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: Docker sandbox not authenticated"))
 		fmt.Println()
 
 		// Show auth prompt
 		if ui.PromptAuthenticate() {
 			fmt.Println("\nAuthenticating...")
 			if err := sb.Authenticate(); err != nil {
-				fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Authentication failed: %v", err)))
+				fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Authentication failed: %v", err)))
 				os.Exit(1)
 			}
 			fmt.Println(ui.SuccessStyle.Render("✓ Authenticated!"))
@@ -82,20 +82,20 @@ func Import(sourceFile string) {
 
 	// Execute Claude with sonnet model
 	if err := sb.ExecuteClaude(prompt, "sonnet"); err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("\n✗ Import failed: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("\n✗ ERROR: Import failed: %v", err)))
 		os.Exit(1)
 	}
 
 	// Push to git
 	branch, err := git.CurrentBranch()
 	if err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("\n✗ Failed to get git branch: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("\n✗ ERROR: Failed to get git branch: %v", err)))
 		os.Exit(1)
 	}
 
 	fmt.Println("\nPushing to git...")
 	if err := git.Push(branch); err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to push: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Failed to push: %v", err)))
 		os.Exit(1)
 	}
 	fmt.Println(ui.SuccessStyle.Render("✓ Pushed to origin/" + branch))

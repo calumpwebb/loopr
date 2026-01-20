@@ -27,7 +27,7 @@ func Update(currentVersion string) error {
 	fmt.Println("Checking for updates...")
 	latestVersion, latestCommit, downloadURL, err := fetchLatestRelease()
 	if err != nil {
-		fmt.Println(ui.ErrorStyle.Render("✗ Failed to check for updates"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: Failed to check for updates"))
 		return err
 	}
 
@@ -54,7 +54,7 @@ func Update(currentVersion string) error {
 	fmt.Println("Downloading...")
 	tmpFile, err := downloadBinary(downloadURL)
 	if err != nil {
-		fmt.Println(ui.ErrorStyle.Render("✗ Download failed"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: Download failed"))
 		return err
 	}
 	defer os.Remove(tmpFile)
@@ -62,7 +62,7 @@ func Update(currentVersion string) error {
 	// 6. Replace current binary (atomic if possible)
 	fmt.Println("Installing...")
 	if err := replaceBinary(execPath, tmpFile); err != nil {
-		fmt.Println(ui.ErrorStyle.Render("✗ Installation failed"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: Installation failed"))
 		return err
 	}
 

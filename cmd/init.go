@@ -36,7 +36,7 @@ func Init() error {
 	fmt.Println("Checking Docker...")
 	sb := sandbox.NewDocker()
 	if !sb.IsAvailable() {
-		fmt.Println(ui.ErrorStyle.Render("✗ Docker is not available"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: Docker is not available"))
 		fmt.Println()
 		fmt.Println("Install Docker Desktop:")
 		fmt.Println("  https://www.docker.com/products/docker-desktop")

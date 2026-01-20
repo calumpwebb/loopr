@@ -14,7 +14,7 @@ import (
 func Archive() {
 	// Check if .loopr directory exists
 	if _, err := os.Stat(".loopr"); os.IsNotExist(err) {
-		fmt.Println(ui.ErrorStyle.Render("✗ .loopr directory not found"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: .loopr directory not found"))
 		fmt.Println("\nRun 'loopr init' first to set up your project.")
 		os.Exit(1)
 	}
@@ -22,7 +22,7 @@ func Archive() {
 	// Check if tasks.md exists
 	tasksFile := ".loopr/tasks.md"
 	if _, err := os.Stat(tasksFile); os.IsNotExist(err) {
-		fmt.Println(ui.ErrorStyle.Render("✗ .loopr/tasks.md not found"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: .loopr/tasks.md not found"))
 		fmt.Println("\nRun 'loopr init' first to set up your project.")
 		os.Exit(1)
 	}
@@ -30,7 +30,7 @@ func Archive() {
 	// Read tasks.md
 	file, err := os.Open(tasksFile)
 	if err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to read tasks.md: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Failed to read tasks.md: %v", err)))
 		os.Exit(1)
 	}
 	defer file.Close()
@@ -52,7 +52,7 @@ func Archive() {
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to read tasks.md: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Failed to read tasks.md: %v", err)))
 		os.Exit(1)
 	}
 
@@ -69,7 +69,7 @@ func Archive() {
 
 	// Create completed directory if it doesn't exist
 	if err := os.MkdirAll(archiveDir, 0755); err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to create completed directory: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Failed to create completed directory: %v", err)))
 		os.Exit(1)
 	}
 
@@ -79,7 +79,7 @@ func Archive() {
 		// File exists, read existing content
 		existingFile, err := os.Open(archiveFile)
 		if err != nil {
-			fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to read existing archive: %v", err)))
+			fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Failed to read existing archive: %v", err)))
 			os.Exit(1)
 		}
 		defer existingFile.Close()
@@ -93,7 +93,7 @@ func Archive() {
 	// Write archive file
 	archiveOutput, err := os.Create(archiveFile)
 	if err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to create archive file: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Failed to create archive file: %v", err)))
 		os.Exit(1)
 	}
 	defer archiveOutput.Close()
@@ -117,14 +117,14 @@ func Archive() {
 	}
 
 	if err := writer.Flush(); err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to write archive file: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Failed to write archive file: %v", err)))
 		os.Exit(1)
 	}
 
 	// Write remaining tasks back to tasks.md
 	tasksOutput, err := os.Create(tasksFile)
 	if err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to write tasks.md: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Failed to write tasks.md: %v", err)))
 		os.Exit(1)
 	}
 	defer tasksOutput.Close()
@@ -135,7 +135,7 @@ func Archive() {
 	}
 
 	if err := tasksWriter.Flush(); err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to write tasks.md: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Failed to write tasks.md: %v", err)))
 		os.Exit(1)
 	}
 

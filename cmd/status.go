@@ -14,7 +14,7 @@ import (
 func Status() {
 	// Check if .loopr directory exists
 	if _, err := os.Stat(".loopr"); os.IsNotExist(err) {
-		fmt.Println(ui.ErrorStyle.Render("✗ .loopr directory not found"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: .loopr directory not found"))
 		fmt.Println("\nRun 'loopr init' first to set up your project.")
 		os.Exit(1)
 	}
@@ -22,7 +22,7 @@ func Status() {
 	// Check if tasks.md exists
 	tasksFile := ".loopr/tasks.md"
 	if _, err := os.Stat(tasksFile); os.IsNotExist(err) {
-		fmt.Println(ui.ErrorStyle.Render("✗ .loopr/tasks.md not found"))
+		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: .loopr/tasks.md not found"))
 		fmt.Println("\nRun 'loopr init' first to set up your project.")
 		os.Exit(1)
 	}
@@ -30,7 +30,7 @@ func Status() {
 	// Read tasks.md
 	file, err := os.Open(tasksFile)
 	if err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to read tasks.md: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Failed to read tasks.md: %v", err)))
 		os.Exit(1)
 	}
 	defer file.Close()
@@ -51,7 +51,7 @@ func Status() {
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ Failed to read tasks.md: %v", err)))
+		fmt.Println(ui.ErrorStyle.Render(fmt.Sprintf("✗ ERROR: Failed to read tasks.md: %v", err)))
 		os.Exit(1)
 	}
 
