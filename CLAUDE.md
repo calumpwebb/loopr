@@ -25,8 +25,19 @@ go build -o loopr main.go
 
 ### Testing
 ```bash
+# Run all tests
 go test ./...
+
+# Run tests with verbose output
+go test ./... -v
+
+# Run tests with coverage
+go test ./... -cover
 ```
+
+Current test coverage:
+- `internal/config/config_test.go` - Config loading and validation
+- `internal/git/operations_test.go` - Git repository operations
 
 ### Running Locally
 ```bash
@@ -287,8 +298,43 @@ loopr/
 
 ## Code Conventions
 
+### General
 - Errors are returned, not logged (except in main.go)
 - UI output uses lipgloss styles (defined in `internal/ui/styles.go`)
 - All user interaction goes through `internal/ui/prompts.go`
 - Git operations isolated in `internal/git/operations.go`
 - Sandbox interface allows future non-Docker implementations
+
+### Commit Messages
+**ALWAYS use Conventional Commits format:**
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+**Types:**
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation only
+- `style:` - Code style (formatting, missing semicolons, etc)
+- `refactor:` - Code change that neither fixes a bug nor adds a feature
+- `perf:` - Performance improvement
+- `test:` - Adding or updating tests
+- `chore:` - Maintenance tasks, dependencies, etc
+- `ci:` - CI/CD changes
+
+**Breaking changes:** Add `!` after type (e.g., `feat!:`) and describe in footer
+
+**Examples:**
+```
+feat: add multi-platform support for darwin-amd64, linux-arm64, and linux-amd64
+fix: correct version comparison in update command to handle commit hash suffix
+docs: update README with new installation instructions
+chore: bump dependencies to latest versions
+```
+
+**Pre-commit hook:** A git pre-commit hook automatically runs `go fmt` on staged Go files before each commit
