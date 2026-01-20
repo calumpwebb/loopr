@@ -35,6 +35,14 @@ func main() {
 				},
 			},
 			{
+				Name:  "guide",
+				Usage: "<- AI (and humans) START HERE!",
+				Action: func(c *cli.Context) error {
+					cmd.Guide()
+					return nil
+				},
+			},
+			{
 				Name:  "init",
 				Usage: "Initialize loopr in current directory",
 				Action: func(c *cli.Context) error {

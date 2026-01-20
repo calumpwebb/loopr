@@ -70,8 +70,27 @@ GOOS=linux GOARCH=amd64 go build -o loopr-linux-amd64
 ```
 
 ### Creating a Release
+
+**IMPORTANT**: Always use the release script (NEVER create tags manually). Use tmux for interactive prompts.
+
 ```bash
-./scripts/release.sh
+# Start tmux session
+tmux new-session -d -s loopr-release -c /Users/calum/Development/loopr/projects/cli
+
+# Run release script
+tmux send-keys -t loopr-release "./scripts/release.sh" Enter
+
+# Wait for version prompt
+sleep 0.5 && tmux capture-pane -t loopr-release -p
+
+# Enter version (e.g., v0.2.7)
+tmux send-keys -t loopr-release "v0.2.7" Enter
+
+# Monitor progress
+tmux capture-pane -t loopr-release -p
+
+# Clean up when done
+tmux kill-session -t loopr-release
 ```
 
 The release script will:
