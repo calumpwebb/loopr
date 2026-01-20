@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   build:
-    name: Build and Release
+    name: Build binaries
     runs-on: macos-latest
     strategy:
       matrix:
@@ -53,12 +53,70 @@ jobs:
             -ldflags "-X main.version=${{ steps.get_version.outputs.VERSION }} -X main.commit=${{ steps.get_commit.outputs.COMMIT }}" \
             -o loopr-${{ matrix.os }}-${{ matrix.arch }}
 
+      - name: Upload binary as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: loopr-${{ matrix.os }}-${{ matrix.arch }}
+          path: loopr-${{ matrix.os }}-${{ matrix.arch }}
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for commit range
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Move binaries to root
+        run: |
+          mv artifacts/loopr-*/* .
+          ls -la loopr-*
+
+      - name: Get version and previous tag
+        id: version_info
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          PREV_TAG=$(git describe --tags --abbrev=0 ${VERSION}^ 2>/dev/null || echo "")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "prev_tag=$PREV_TAG" >> $GITHUB_OUTPUT
+
+      - name: Generate commit list
+        id: commits
+        run: |
+          PREV_TAG="${{ steps.version_info.outputs.prev_tag }}"
+          VERSION="${{ steps.version_info.outputs.version }}"
+          REPO="${{ github.repository }}"
+
+          if [ -z "$PREV_TAG" ]; then
+            RANGE="${VERSION}"
+          else
+            RANGE="${PREV_TAG}..${VERSION}"
+          fi
+
+          COMMITS=$(git log ${RANGE} --oneline --no-decorate | sed "s/^\([a-f0-9]*\) \(.*\)/* [\1](https:\/\/github.com\/${REPO}\/commit\/\1): \2/")
+
+          {
+            echo "commits<<EOF"
+            echo "$COMMITS"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: loopr-${{ matrix.os }}-${{ matrix.arch }}
+          files: loopr-*
           draft: false
           prerelease: false
-          generate_release_notes: true
+          body: |
+            ## Commits in this release
+
+            ${{ steps.commits.outputs.commits }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
