@@ -51,13 +51,14 @@ Choose tasks based on:
 - **DO run tests** - If test commands are in context.md, run them before committing
 - **DO check off tasks** - Mark tasks as [x] when complete
 - **DO commit after each task** - One task = one commit
+- **DO NOT use emojis** - Keep all output, commit messages, and code comments emoji-free
 - **DO NOT skip validation** - If validation commands exist in context.md, run them
 - **DO NOT implement multiple tasks** - Focus on ONE highest-priority task per iteration
 
 ## What if all tasks are complete?
 
 If .loopr/tasks.md has no unchecked tasks:
-1. Output: "All tasks complete! ✓"
+1. Output: "All tasks complete."
 2. Suggest running ` + "`loopr archive`" + ` to clean up completed tasks
 3. Do NOT commit if you made no changes
 

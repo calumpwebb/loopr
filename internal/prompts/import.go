@@ -81,6 +81,7 @@ You are in IMPORT mode. Your goal is to extract actionable tasks from a specific
 - **DO avoid duplicates** - Check if a task already exists before adding
 - **DO be specific** - Each task should be clear and actionable
 - **DO consider dependencies** - If task B needs task A, make task A higher priority
+- **DO NOT use emojis** - Keep all output, commit messages, and task descriptions emoji-free
 - **DO NOT implement anything** - This is import only, no code changes
 - **DO NOT check off tasks** - All imported tasks should be unchecked [ ]
 

@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-	"strings"
 
 	"github.com/calumpwebb/loopr/internal/ui"
 )
@@ -25,24 +24,21 @@ func Update(currentVersion string) error {
 	// 2. Fetch latest release from GitHub API
 	fmt.Println()
 	fmt.Println("Checking for updates...")
-	latestVersion, latestCommit, downloadURL, err := fetchLatestRelease()
+	latestVersion, downloadURL, err := fetchLatestRelease()
 	if err != nil {
 		fmt.Println(ui.ErrorStyle.Render("✗ ERROR: Failed to check for updates"))
 		return err
 	}
 
 	// 3. Compare versions
-	// Extract version tag from currentVersion (may include commit hash like "v0.2.0 (abc1234)")
-	currentVersionTag, _, _ := strings.Cut(currentVersion, " ")
-	if currentVersionTag == latestVersion {
+	if currentVersion == latestVersion {
 		fmt.Println(ui.SuccessStyle.Render("✓ Already on latest version: " + currentVersion))
 		return nil
 	}
 
 	// 4. Show update prompt
 	fmt.Println()
-	latestVersionDisplay := fmt.Sprintf("%s (%s)", latestVersion, latestCommit[:7])
-	fmt.Printf("Update available: %s → %s\n", currentVersion, latestVersionDisplay)
+	fmt.Printf("Update available: %s → %s\n", currentVersion, latestVersion)
 	fmt.Println()
 	if !ui.PromptUpdate() {
 		fmt.Println("Cancelled.")
@@ -76,40 +72,39 @@ func Update(currentVersion string) error {
 }
 
 // fetchLatestRelease fetches the latest release info from GitHub API
-func fetchLatestRelease() (version, commit, downloadURL string, err error) {
+func fetchLatestRelease() (version, downloadURL string, err error) {
 	url := fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", githubRepo)
 	resp, err := http.Get(url)
 	if err != nil {
-		return "", "", "", fmt.Errorf("failed to fetch release info: %w", err)
+		return "", "", fmt.Errorf("failed to fetch release info: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", "", "", fmt.Errorf("GitHub API returned status %d", resp.StatusCode)
+		return "", "", fmt.Errorf("GitHub API returned status %d", resp.StatusCode)
 	}
 
 	var release struct {
-		TagName         string `json:"tag_name"`
-		TargetCommitish string `json:"target_commitish"`
-		Assets          []struct {
+		TagName string `json:"tag_name"`
+		Assets  []struct {
 			Name               string `json:"name"`
 			BrowserDownloadURL string `json:"browser_download_url"`
 		} `json:"assets"`
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
-		return "", "", "", fmt.Errorf("failed to parse release info: %w", err)
+		return "", "", fmt.Errorf("failed to parse release info: %w", err)
 	}
 
 	// Find matching binary for current platform
 	binaryName := fmt.Sprintf("loopr-%s-%s", runtime.GOOS, runtime.GOARCH)
 	for _, asset := range release.Assets {
 		if asset.Name == binaryName {
-			return release.TagName, release.TargetCommitish, asset.BrowserDownloadURL, nil
+			return release.TagName, asset.BrowserDownloadURL, nil
 		}
 	}
 
-	return "", "", "", fmt.Errorf("no binary found for %s/%s", runtime.GOOS, runtime.GOARCH)
+	return "", "", fmt.Errorf("no binary found for %s/%s", runtime.GOOS, runtime.GOARCH)
 }
 
 // downloadBinary downloads a binary from a URL to a temporary file

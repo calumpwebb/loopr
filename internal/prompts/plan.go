@@ -45,6 +45,7 @@ Use this format:
 
 - **DO NOT IMPLEMENT** - This is planning only. No code changes except to .loopr/tasks.md and .loopr/context.md
 - **DO NOT check off tasks** - Tasks remain unchecked ([ ]) during planning
+- **DO NOT use emojis** - Keep all output, commit messages, and task descriptions emoji-free
 - **DO search before assuming** - Confirm missing functionality before adding tasks
 - **DO think about dependencies** - High-priority tasks should generally not depend on low-priority tasks
 - **DO be specific** - "Implement authentication" is better than "Add security features"
