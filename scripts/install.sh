@@ -66,21 +66,27 @@ detect_platform() {
 
 # Check if platform is supported
 check_platform_supported() {
-    # Currently only darwin/arm64 is supported
-    if [ "$PLATFORM" != "darwin-arm64" ]; then
-        log_error "Platform $PLATFORM is not yet supported"
-        echo ""
-        echo "Currently supported:"
-        echo "  • macOS Apple Silicon (darwin-arm64)"
-        echo ""
-        echo "Coming soon:"
-        echo "  • macOS Intel (darwin-amd64)"
-        echo "  • Linux ARM64 (linux-arm64)"
-        echo "  • Linux AMD64 (linux-amd64)"
-        echo ""
-        echo "Follow progress at: https://github.com/$REPO"
-        exit 1
-    fi
+    # Supported platforms: darwin-arm64, darwin-amd64, linux-arm64, linux-amd64
+    case "$PLATFORM" in
+        darwin-arm64|darwin-amd64|linux-arm64|linux-amd64)
+            # Platform is supported
+            ;;
+        *)
+            log_error "Platform $PLATFORM is not yet supported"
+            echo ""
+            echo "Currently supported:"
+            echo "  • macOS Apple Silicon (darwin-arm64)"
+            echo "  • macOS Intel (darwin-amd64)"
+            echo "  • Linux ARM64 (linux-arm64)"
+            echo "  • Linux AMD64 (linux-amd64)"
+            echo ""
+            echo "Coming soon:"
+            echo "  • Windows (windows-amd64)"
+            echo ""
+            echo "Follow progress at: https://github.com/$REPO"
+            exit 1
+            ;;
+    esac
 }
 
 # Get latest release version from GitHub API

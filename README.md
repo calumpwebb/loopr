@@ -63,12 +63,12 @@ go build
 
 Currently supported:
 - macOS Apple Silicon (ARM64)
+- macOS Intel (AMD64)
+- Linux ARM64 (aarch64)
+- Linux AMD64 (x86_64)
 
 Coming soon:
-- macOS Intel (AMD64)
-- Linux ARM64
-- Linux AMD64
-- Windows
+- Windows (requires Docker Desktop for Windows testing)
 
 ### Check Version
 

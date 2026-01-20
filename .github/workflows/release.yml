@@ -17,13 +17,13 @@ jobs:
         include:
           - os: darwin
             arch: arm64
-          # Future platforms (uncomment to enable):
-          # - os: darwin
-          #   arch: amd64
-          # - os: linux
-          #   arch: arm64
-          # - os: linux
-          #   arch: amd64
+          - os: darwin
+            arch: amd64
+          - os: linux
+            arch: arm64
+          - os: linux
+            arch: amd64
+          # Future platforms:
           # - os: windows
           #   arch: amd64
 
