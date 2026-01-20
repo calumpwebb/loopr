@@ -100,7 +100,7 @@ jobs:
             RANGE="${PREV_TAG}..${VERSION}"
           fi
 
-          COMMITS=$(git log ${RANGE} --oneline --no-decorate | sed "s/^\([a-f0-9]*\) \(.*\)/* [\1](https:\/\/github.com\/${REPO}\/commit\/\1): \2/")
+          COMMITS=$(git log ${RANGE} --oneline --no-decorate | sed "s|^\([a-f0-9]*\) \(.*\)|* [\1](https://github.com/${REPO}/commit/\1): \2|")
 
           {
             echo "commits<<EOF"
