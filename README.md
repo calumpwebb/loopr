@@ -20,7 +20,7 @@ Loopr is a single-binary CLI tool that orchestrates autonomous development workf
 ### Quick Install (Recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/calumpwebb/loopr/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/calumpwebb/loopr/main/scripts/install.sh | bash
 ```
 
 This will:
@@ -31,7 +31,7 @@ This will:
 ### Custom Install Location
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/calumpwebb/loopr/main/install.sh | INSTALL_DIR=/usr/local/bin bash
+curl -fsSL https://raw.githubusercontent.com/calumpwebb/loopr/main/scripts/install.sh | INSTALL_DIR=/usr/local/bin bash
 ```
 
 ### Manual Installation
